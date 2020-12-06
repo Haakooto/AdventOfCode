@@ -1,2 +1,2 @@
-# AoC_2020
+# AoC
 Solutions to Advent of Code 2020
