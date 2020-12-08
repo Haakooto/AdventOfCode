@@ -27,6 +27,6 @@ for from_cmd, to_cmd in (("jmp", "nop"), ("nop", "jmp")):
         if from_cmd in line:
             new_codes = codes.copy()
             new_codes[i] = new_codes[i].replace(from_cmd, to_cmd)
-            acc, terminated = run_prog(new_codes)
-            if terminated:
+            acc, succ = run_prog(new_codes)
+            if succ:
                 print(acc)
