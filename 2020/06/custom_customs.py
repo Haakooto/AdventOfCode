@@ -21,4 +21,3 @@ for line in open("i").read().split("\n"):
 
 print(count_1)
 print(count_2)
-

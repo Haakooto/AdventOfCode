@@ -1,3 +1,7 @@
+# print((diffs:=[(adapters:=[sotred([int(i) for i in open("i").read().splitlines()])])[i + 1] - adapters[i] for in in range(len(adapters) - 1)]).count(1) * diffs.count(3))
+adapters = sorted([int(i) for i in open("i").read().splitlines() if i != ""])
+diffs = [adapters[i + 1] - adapters[i] for i in range(len(adapters) - 1)]
+
 adapters = [0]
 for i in open("i").read().splitlines():
     if i != "":
