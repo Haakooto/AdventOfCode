@@ -9,7 +9,7 @@ for food in open("input").read().strip().splitlines():
         if allerg not in allergens:
             allergens[allerg] = set(ingreds)
         else:
-            allergens[allerg].intersection_update(ingreds)
+            allergens[allerg] &= set(ingreds)
     for ingred in ingreds:
         if ingred not in ingredients:
             ingredients[ingred] = 1
@@ -21,13 +21,10 @@ for _ in range(100):
         if len(allergens[allerg]) == 1:
             for other in allergens:
                 if allerg != other:
-                    try:
-                        allergens[other].remove(tuple(allergens[allerg])[0])
-                    except KeyError:
-                        pass
+                    allergens[other] -= allergens[allerg]
 
 allergs = sorted(list(allergens.keys()))
-ingred_with_allergens = [tuple(allergens[allerg])[0] for allerg in allergs]
+ingred_with_allergens = [next(iter(allergens[allerg])) for allerg in allergs]
 
 num = 0
 for ingred, cnt in ingredients.items():
