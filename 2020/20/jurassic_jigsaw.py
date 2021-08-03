@@ -3,6 +3,10 @@ import sys
 
 
 class Tile:
+    """ Holds tile images and neighbours
+        Easy to flip and rotate to find correct orientation
+        Repermutes edges and friends when flipped
+    """
     def __init__(self, id, img):
         self.id = id
         self.img = img
@@ -29,21 +33,21 @@ class Tile:
     def flip(self):
         self.img = self.img.T
         self.make_edges()
-        self.permute_friends((1, 0, 3, 2))
+        self.permute_friends(1, 0, 3, 2)
 
     def lr_flip(self):
         self.img = self.img[:, ::-1]
-        self.permute_friends((0, 3, 2, 1))
+        self.permute_friends(0, 3, 2, 1)
 
     def tb_flip(self):
         self.img = self.img[::-1, :]
-        self.permute_friends((2, 1, 0, 3))
+        self.permute_friends(2, 1, 0, 3)
 
     def rotate(self):
         self.img = np.rot90(self.img)
-        self.permute_friends((3, 0, 1, 2))
+        self.permute_friends(3, 0, 1, 2)
 
-    def permute_friends(self, order):
+    def permute_friends(self, *order):
         self.friends = [self.friends[i] for i in order]
 
     def core(self):
@@ -67,6 +71,10 @@ class Tile:
 
 
 class Board:
+    """ To hold and insert tiles
+        Works kinda like a 2D linked list.
+        Each tile knows its neighbouring tiles
+    """
     def __init__(self, size, start):
         self.s = start.img.shape[0] - 2
         self.board = np.zeros((size, size), dtype=Tile)
@@ -107,20 +115,24 @@ class Board:
 
 
 def identify_corners(tiles):
+    """ first loop finds the neighbours of all the tiles """
     corners = 1
     for i, tile in enumerate(tiles):
         for other in tiles[i + 1:]:
             tile.match(other)
+    """ second loop find tiles with only 2 neighbours """
     for tile in tiles:
         if tile.is_corner():
             corners *= tile.id
             if sum([tile.friends[i] is None for i in range(2)]) == 2:
                 start = tile
+                # happen to have a top left corner to start from
     print(corners)
     return start
 
 
 def assemble_puzzle(tiles, start):
+    """ use start tile to build up rest of puzzle """
     size = int(np.sqrt(tiles))
     board = Board(size, start)
     for y in range(size):
@@ -131,6 +143,7 @@ def assemble_puzzle(tiles, start):
 
 
 def hunt_monsters(ocean, monster):
+    """ count sea monsters using convolution """
     ym, xm = monster.shape
     xo, yo = ocean.shape
     monster_size = np.sum(monster)
@@ -159,6 +172,7 @@ def main():
         if sys.argv[1] == "test":
             file = "test"
 
+    # read in tiles and monster
     conv = {"#": 1, ".": 0, " ": -1}
     tiles = []
     for tile in open(file).read().strip().split("\n\n"):
@@ -171,11 +185,11 @@ def main():
     monster = np.asarray([[conv[p] for p in line] for line in open("monster").read().splitlines()])
     monster = np.ma.masked_where(monster == -1, monster)
 
+    # The real work
     s = identify_corners(tiles)
     ocean = assemble_puzzle(len(tiles), s)
 
     sea_monsters = hunt_monsters(ocean, monster)
-
     print(np.sum(ocean) - np.sum(monster) * sea_monsters)
 
 
