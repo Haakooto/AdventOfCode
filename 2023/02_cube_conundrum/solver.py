@@ -16,21 +16,6 @@ def solver(input_file):
         possible += int(id)
     return possible, power
 
-
-def solver2(input_file):
-    power = 0
-    for line in open(input_file, 'r').read().split("\n")[:-1]:
-        id, game = line.split(": ")
-        id = id.split(" ")[1]
-        mins = {"red": 0, "green": 0, "blue": 0}
-        for turn in game.split("; "):
-            for cube in turn.split(", "):
-                count, color = cube.split(" ")
-                mins[color] = max(mins[color], int(count))
-        print(id, mins)
-        power += mins["red"] * mins["green"] * mins["blue"]
-    return power
-
 def test_parts(input, true, part2=False):
     ans = solver(input)
     ans = ans[1] if part2 else ans[0]
@@ -43,8 +28,8 @@ def main():
 
     test_parts(test, 8)
     test_parts(test, 2286, part2=True)
-    p1, p2 = solver(real)
     
+    p1, p2 = solver(real)
     print(f"Part 1: {p1}")
     print(f"Part 2: {p2}")
     

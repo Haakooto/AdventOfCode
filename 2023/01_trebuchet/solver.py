@@ -3,17 +3,16 @@ import re
 def solver(input_file, part2=False):
     letters = {"one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six": "6", "seven": "7", "eight": "8", "nine": "9"}
     numbers = {v: v for k, v in letters.items()}
+    converter = numbers
     if part2:
         converter = {**numbers, **letters}
-    else:
-        converter = numbers
+        
     sum = 0
     for line in open(input_file, 'r').read().split("\n")[:-1]:
         matches = "|".join(converter.keys())
         pattern = fr'(?=({matches}))'
         nums = re.findall(pattern, line)
-        calibration_val = int(converter[nums[0]] + converter[nums[len(nums)-1]])
-        sum += calibration_val
+        sum += int(converter[nums[0]] + converter[nums[len(nums)-1]])
     return sum
 
 def test_part1(input, true):

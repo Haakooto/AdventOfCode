@@ -3,26 +3,16 @@ import re
 
 def solver1(input_file):
     engine = np.loadtxt(input_file, dtype=str, comments=None)
-    height = len(engine)
-    width = len(engine[0])
     parts = 0
     for i, line in enumerate(engine):
-        iter = re.finditer(r'\d+', line)
-        for m in iter:
+        for m in re.finditer(r'\d+', line):
             start, end = m.span()
             number = m.group()
             for j in range(i-1, i+2):
-                if j < 0 or j >= height:
+                if j < 0 or j >= len(engine):
                     continue
-                if start == 0:
-                    search = engine[j][:end+1]
-                elif end == width:
-                    search = engine[j][start-1:]
-                else:
-                    search = engine[j][start-1:end+1]
-                if j == i:
-                    search = search.replace(number, ".")
-                search = search.replace(".", "")
+                search = engine[j][max(start-1, 0):end+1]
+                search = search.replace(".", "").replace(number, "")
                 if len(search) != 0:
                     parts += int(number)
                     break
@@ -30,15 +20,13 @@ def solver1(input_file):
 
 def solver2(input_file):
     engine = np.loadtxt(input_file, dtype=str, comments=None)
-    height = len(engine)
     ratios = 0
     for i, line in enumerate(engine):
-        gears = re.finditer(r'\*', line)
-        for gear in gears:
+        for gear in re.finditer(r'\*', line):
             gear = gear.start()
             ratio = []
             for j in range(i-1, i+2):
-                if j < 0 or j >= height:
+                if j < 0 or j >= len(engine):
                     continue
                 for nums in re.finditer(r'\d+', engine[j]):
                     s, e = nums.span()
@@ -47,7 +35,6 @@ def solver2(input_file):
             if len(ratio) == 2:
                 ratios += ratio[0] * ratio[1]
     return ratios
-             
 
 def test_part(input, true, part2=False):
     ans = solver1(input) if not part2 else solver2(input)

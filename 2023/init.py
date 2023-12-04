@@ -17,8 +17,6 @@ def get_AOC_title(year, day):
         problem_name = problem_name.strip().replace(' ', '_').lower()
         cleaned = re.sub(r'[^a-zA-Z0-9_]', '', problem_name)
         return cleaned
-    else:
-        return None
 
 def get_AOC_input(year, day):
     url = f'https://adventofcode.com/{2023}/day/{day}/input'
@@ -28,8 +26,6 @@ def get_AOC_input(year, day):
     
     if response.status_code == 200:
         return response.text
-    else:
-        return None
     
 def create_folder(year, day):
     problem_name = get_AOC_title(year, day)
@@ -37,8 +33,6 @@ def create_folder(year, day):
         folder_name = f"{day:02d}_{problem_name}"
         os.makedirs(folder_name)
         return folder_name
-    else:
-        return None
     
 def main():
     if len(sys.argv) == 1:
@@ -48,8 +42,12 @@ def main():
 
     folder_name = create_folder(2023, d)
     if folder_name:
-        with open(f"{folder_name}/input.txt", 'w') as f:
-            f.write(get_AOC_input(2023, d))
+        inp = get_AOC_input(2023, d)
+        if inp:
+            with open(f"{folder_name}/input.txt", 'w') as f:
+                f.write(inp)
+        else:
+            print("Error: Could not get input")
         with open(f"{folder_name}/test_input.txt", 'w') as f:
             f.write("")
         with open(f"{folder_name}/test_input_2.txt", 'w') as f:

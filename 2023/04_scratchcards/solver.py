@@ -17,7 +17,7 @@ def solver(input_file):
         for i in range(card_base[card_id]["hits"]):
             card_base[card_id + i + 1]["count"] += card_base[card_id]["count"]
     
-    return score, sum([v["count"] for k, v in card_base.items()])
+    return score, sum([v["count"] for v in card_base.values()])
 
 def test_part(input, true, part2=False):
     ans = solver(input)

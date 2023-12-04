@@ -26,7 +26,7 @@ def test_part(input, true, part2=False):
     ans = solver1(input) if not part2 else solver2(input)
 
     if ans != true:
-        raise Exception(f"Test part 1 failed for {input}. Expected {true}, got {ans}")
+        raise Exception(f"Test part {'2' if part2 else '1'} failed for {input}. Expected {true}, got {ans}")
 
 def main():
     test1 = "test_input.txt" 
