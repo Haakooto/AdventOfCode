@@ -1,4 +1,4 @@
-import numpy as np
+ import numpy as np
 
 def solver(input_file, expansion_factor=2):
     with open(input_file, "r") as f:

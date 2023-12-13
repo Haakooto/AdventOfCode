@@ -3,6 +3,7 @@ import sys
 import requests
 import re
 from datetime import datetime
+import shutil
 
 def get_AOC_title(year, day):
     url = f'https://adventofcode.com/{2023}/day/{day}'
@@ -31,7 +32,8 @@ def create_folder(year, day):
     problem_name = get_AOC_title(year, day)
     if problem_name:
         folder_name = f"{day:02d}_{problem_name}"
-        os.makedirs(folder_name)
+        shutil.copytree("./00_base_day", folder_name, symlinks=False, ignore=None, ignore_dangling_symlinks=False, dirs_exist_ok=False)
+        # os.makedirs(folder_name)
         return folder_name
     
 def main():
