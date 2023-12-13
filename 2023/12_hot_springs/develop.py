@@ -1,24 +1,12 @@
-from solver import parse, arrangements
-from collections import Counter
+from main import alt
 
-with open("test_input.txt", "r") as f:
-    lines = f.read().split("\n")[:-1]
-lengths = []
-for line in lines:
-    sequence = parse(line)
-    l = arrangements(sequence)
-    if l is not None:
-        lengths.append(l)
+if alt == 1:
+    from solver import solver_alt1 as solver
+elif alt == 2:
+    from solver import solver_alt2 as solver
+elif alt == 3:
+    from solver import solver1_alt3 as solver1, solver2_alt3 as solver2
+from solver import arragements
 
-print(len(lengths))
-print(Counter(lengths))
-    
-#     # new_len, _ = sequence
-#     new_len = arrangements(sequence)
-#     lengths.append(new_len)
-
-# print(Counter(lengths))
-#     if len(new_len) > max:
-#         max = len(new_len)
-# print(max)
-
+test1 = "test_input.txt"
+solver(test1)

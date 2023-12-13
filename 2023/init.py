@@ -6,7 +6,7 @@ from datetime import datetime
 import shutil
 
 def get_AOC_title(year, day):
-    url = f'https://adventofcode.com/{2023}/day/{day}'
+    url = f'https://adventofcode.com/{year}/day/{day}'
     response = requests.get(url)
     
     if response.status_code == 200:
@@ -20,7 +20,7 @@ def get_AOC_title(year, day):
         return cleaned
 
 def get_AOC_input(year, day):
-    url = f'https://adventofcode.com/{2023}/day/{day}/input'
+    url = f'https://adventofcode.com/{year}/day/{day}/input'
     
     cookie = {"cookie": f'session={open("cookie.txt", "r").read()}'}
     response = requests.get(url, headers=cookie)
@@ -33,18 +33,18 @@ def create_folder(year, day):
     if problem_name:
         folder_name = f"{day:02d}_{problem_name}"
         shutil.copytree("./00_base_day", folder_name, symlinks=False, ignore=None, ignore_dangling_symlinks=False, dirs_exist_ok=False)
-        # os.makedirs(folder_name)
         return folder_name
     
 def main():
+    year = 2023
     if len(sys.argv) == 1:
         d = int(datetime.now().strftime("%d"))
     elif len(sys.argv) == 2:
         d = int(sys.argv[1])
 
-    folder_name = create_folder(2023, d)
+    folder_name = create_folder(year, d)
     if folder_name:
-        inp = get_AOC_input(2023, d)
+        inp = get_AOC_input(year, d)
         if inp:
             with open(f"{folder_name}/input.txt", 'w') as f:
                 f.write(inp)
@@ -54,8 +54,6 @@ def main():
             f.write("")
         with open(f"{folder_name}/test_input_2.txt", 'w') as f:
             f.write("")
-        with open(f"{folder_name}/solver.py", 'w') as f:
-            f.write(open("base_file.py", 'r').read())
         print(f"Created folder {folder_name}")
     else:
         print("Error: Could not create folder")
