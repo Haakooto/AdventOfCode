@@ -17,8 +17,7 @@ def get_reflection_line(pattern, part2=False):
     pattern = np.array([list(line) for line in pattern.strip().split("\n")], dtype=int)
     if (cols:=reflect(pattern.T, part2)):
         return cols
-    else:
-        return reflect(pattern, part2) * 100
+    return reflect(pattern, part2) * 100
 
 def solver(input_file, part2=False):
     sum = 0
@@ -35,26 +34,21 @@ def test_part(input, true, part2=False):
     if ans != true:
         raise Exception(f"Test part {'2' if part2 else '1'} failed for {input}. Expected {true}, got {ans}")
     
-def unit_tests():
-    for i, (pattern, exp) in enumerate(zip(open("test_input.txt", "r").read().split("\n\n"), (5, 400))):
-        ans = get_reflection_line(pattern)
-
-        if ans != exp:
-            raise Exception(f"Unit test {i+1} failed. Expected {exp}, got {ans}")
-    for i, (pattern, exp) in enumerate(zip(open("test_input.txt", "r").read().split("\n\n"), (300, 100))):
-        ans = get_reflection_line(pattern, part2=True)
-
+def unit_tests(input_file, expected, part2=False):
+    for i, (input, exp) in enumerate(zip(open(input_file, "r").read().split("\n\n"), expected)):
+        ans = get_reflection_line(input, part2=part2)
         if ans != exp:
             raise Exception(f"Unit test {i+1} failed. Expected {exp}, got {ans}")
         
-    print("All unit tests passed")
 
 def main():
     test1 = "test_input.txt", 405
     test2 = "test_input.txt", 400
     real = "input.txt"
 
-    unit_tests()
+    unit_tests(test1[0], (5, 400), part2=False)
+    unit_tests(test2[0], (300, 100), part2=True)
+
     test_part(*test1)
     print(f"Part 1: {solver(real)}")    
     test_part(*test2, part2=True)
