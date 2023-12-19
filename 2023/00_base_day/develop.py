@@ -1,4 +1,4 @@
-alt = 1
+from main import alt
 
 if alt == 1:
     from solver import solver_alt1 as solver

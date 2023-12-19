@@ -25,80 +25,124 @@ class Ray:
     def turn(self, new_direction):
         self.direction = new_direction
 
+def scatter_rays(grid, ray_splits):
+    energized = np.zeros((*grid.shape, 2), dtype=int)
+    while len(ray_splits) > 0:
+        ray = ray_splits.pop(0)
+        while ray.alive:
+            ray.move()
+            if ray.position[0] < 0 or ray.position[1] < 0 or ray.position[0] >= grid.shape[0] or ray.position[1] >= grid.shape[1]:
+                ray.alive = False
+                continue
+
+            if grid[*ray.position] == ".":
+                energized[*ray.position][0 if ray.direction in (up, down) else 0] = 1
+            elif grid[*ray.position] == "\\":
+                if ray.direction == left:
+                    if energized[*ray.position][0] == 1:
+                        ray.alive = False
+                        continue
+                    ray.turn(up)
+                    energized[*ray.position][0] = 1
+                elif ray.direction == up:
+                    if energized[*ray.position][1] == 1:
+                        ray.alive = False
+                        continue
+                    ray.turn(left)
+                    energized[*ray.position][1] = 1
+                elif ray.direction == right:
+                    if energized[*ray.position][1] == 1:
+                        ray.alive = False
+                        continue
+                    ray.turn(down)
+                    energized[*ray.position][1] = 1
+                elif ray.direction == down:
+                    if energized[*ray.position][0] == 1:
+                        ray.alive = False
+                        continue
+                    ray.turn(right)
+                    energized[*ray.position][0] = 1
+            elif grid[*ray.position] == "/":
+                if ray.direction == left:
+                    if energized[*ray.position][0] == 1:
+                        ray.alive = False
+                        continue
+                    ray.turn(down)
+                    energized[*ray.position][0] = 1
+                elif ray.direction == up:
+                    if energized[*ray.position][0] == 1:
+                        ray.alive = False
+                        continue
+                    ray.turn(right)
+                    energized[*ray.position][0] = 1
+                elif ray.direction == right:
+                    if energized[*ray.position][1] == 1:
+                        ray.alive = False
+                        continue
+                    ray.turn(up)
+                    energized[*ray.position][1] = 1
+                elif ray.direction == down:
+                    if energized[*ray.position][1] == 1:
+                        ray.alive = False
+                        continue
+                    ray.turn(left)
+                    energized[*ray.position][1] = 1
+            elif grid[*ray.position] == "|":
+                if ray.direction in (left, right):
+                    if energized[*ray.position][0] == 1:
+                        ray.alive = False
+                        continue
+                    ray_splits.append(Ray(ray.position.copy(), up))
+                    ray.turn(down)
+                    energized[*ray.position][0] = 1
+                else:
+                    if energized[*ray.position][1] == 1:
+                        ray.alive = False
+                        continue
+                    energized[*ray.position][1] = 1
+            elif grid[*ray.position] == "-":
+                if ray.direction in (up, down):
+                    if energized[*ray.position][0] == 1:
+                        ray.alive = False
+                        continue
+                    ray_splits.append(Ray(ray.position.copy(), left))
+                    ray.turn(right)
+                    energized[*ray.position][0] = 1
+                else:
+                    if energized[*ray.position][1] == 1:
+                        ray.alive = False
+                        continue
+                    energized[*ray.position][1] = 1
+    return np.sum(np.logical_or(energized[..., 0], energized[..., 1]))
 
 def solver_alt1(input_file, part2=False):
     with open(input_file, 'r') as file:
         lines = file.readlines()
     grid = np.array([[i for i in line.strip()] for line in lines], dtype=str)
-    energized = np.zeros_like(grid, dtype=int)
+    
+    if not part2:
+        position = np.array([0, -1])
+        ray_splits = [Ray(position, right)]
+        return scatter_rays(grid, ray_splits)
 
-    position = np.array([0, -1])
-
-    ray_splits = [Ray(position, right)]
-    while len(ray_splits) > 0:
-        ray = ray_splits.pop(0)
-        print(f"New ray, starting at {ray.position}, going {ray.direction.__name__}")
-        while ray.alive:
-            print(energized)
-            print(ray.position, ray.direction.__name__, ray.direction())
-            print()
-            ray.move()
-            if ray.position[0] < 0 or ray.position[1] < 0 or ray.position[0] >= grid.shape[0] or ray.position[1] >= grid.shape[1]:
-                ray.alive = False
-                print("Hit wall, died")
-                continue
-            if energized[*ray.position] in (3, 4):
-                ray.alive = False
-                print("Deja vu")
-                continue
-
-            if grid[*ray.position] == ".":
-                energized[*ray.position] += 1 if ray.direction in (up, down) else 2
-            elif grid[*ray.position] == "\\":
-                if ray.direction == left:
-                    ray.turn(up)
-                    energized[*ray.position] += 1
-                elif ray.direction == up:
-                    ray.turn(left)
-                    energized[*ray.position] += 2
-                elif ray.direction == right:
-                    ray.turn(down)
-                    energized[*ray.position] += 2
-                elif ray.direction == down:
-                    ray.turn(right)
-                    energized[*ray.position] += 1
-            elif grid[*ray.position] == "/":
-                if ray.direction == left:
-                    ray.turn(down)
-                    energized[*ray.position] += 1
-                elif ray.direction == up:
-                    ray.turn(right)
-                    energized[*ray.position] += 1
-                elif ray.direction == right:
-                    ray.turn(up)
-                    energized[*ray.position] += 2
-                elif ray.direction == down:
-                    ray.turn(left)
-                    energized[*ray.position] += 2
-            elif grid[*ray.position] == "|":
-                if ray.direction in (left, right):
-                    ray_splits.append(Ray(ray.position.copy(), up))
-                    ray.turn(down)
-                    energized[*ray.position] += 1
-                else:
-                    energized[*ray.position] += 2
-            elif grid[*ray.position] == "-":
-                if ray.direction in (up, down):
-                    ray_splits.append(Ray(ray.position.copy(), left))
-                    ray.turn(right)
-                    energized[*ray.position] += 1
-                else:
-                    energized[*ray.position] += 2
-            input()
-
-    print(energized)
-    # One function that behaves differently depending on part2
-    return None
+    max_energy = 0
+    for i in range(grid.shape[0]):
+        position = np.array([i, -1])
+        ray_splits = [Ray(position, right)]
+        max_energy = max(max_energy, scatter_rays(grid, ray_splits))
+    for i in range(grid.shape[1]):
+        position = np.array([-1, i])
+        ray_splits = [Ray(position, down)]
+        max_energy = max(max_energy, scatter_rays(grid, ray_splits))
+    for i in range(grid.shape[0]):
+        position = np.array([i, grid.shape[1]])
+        ray_splits = [Ray(position, left)]
+        max_energy = max(max_energy, scatter_rays(grid, ray_splits))
+    for i in range(grid.shape[1]):
+        position = np.array([grid.shape[0], i])
+        ray_splits = [Ray(position, up)]
+        max_energy = max(max_energy, scatter_rays(grid, ray_splits))
+    return max_energy
 
 def solver_alt2(input_file):
     with open(input_file, "r") as file:

@@ -32,7 +32,9 @@ def create_folder(year, day):
     problem_name = get_AOC_title(year, day)
     if problem_name:
         folder_name = f"{day:02d}_{problem_name}"
-        shutil.copytree("./00_base_day", folder_name, symlinks=False, ignore=None, ignore_dangling_symlinks=False, dirs_exist_ok=False)
+        if not os.path.exists(folder_name):
+            shutil.copytree("./00_base_day", folder_name, symlinks=False, ignore=None, ignore_dangling_symlinks=False, dirs_exist_ok=False)
+            print(f"Created folder {folder_name}")
         return folder_name
     
 def main():
@@ -54,7 +56,6 @@ def main():
             f.write("")
         with open(f"{folder_name}/test_input_2.txt", 'w') as f:
             f.write("")
-        print(f"Created folder {folder_name}")
     else:
         print("Error: Could not create folder")
 

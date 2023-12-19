@@ -33,7 +33,7 @@ def unit_tests(input_file, expected, part2=False):
 
 def main():
     test1 = "test_input.txt", 46
-    test2 = "test_input.txt", None
+    test2 = "test_input.txt", 51
     real = "input.txt"
 
     # # For days where the input is a list of inputs treated separately
