@@ -26,6 +26,8 @@ class Ray:
         self.direction = new_direction
 
 def scatter_rays(grid, ray_splits):
+    slash_actions = {"\\": {left: [up, 0], up: [left, 1], right: [down, 1], down: [right, 0]},
+                     "/": {left: [down, 0], up: [right, 0], right: [up, 1], down: [left, 1]}}
     energized = np.zeros((*grid.shape, 2), dtype=int)
     while len(ray_splits) > 0:
         ray = ray_splits.pop(0)
@@ -37,56 +39,14 @@ def scatter_rays(grid, ray_splits):
 
             if grid[*ray.position] == ".":
                 energized[*ray.position][0 if ray.direction in (up, down) else 0] = 1
-            elif grid[*ray.position] == "\\":
-                if ray.direction == left:
-                    if energized[*ray.position][0] == 1:
-                        ray.alive = False
-                        continue
-                    ray.turn(up)
-                    energized[*ray.position][0] = 1
-                elif ray.direction == up:
-                    if energized[*ray.position][1] == 1:
-                        ray.alive = False
-                        continue
-                    ray.turn(left)
-                    energized[*ray.position][1] = 1
-                elif ray.direction == right:
-                    if energized[*ray.position][1] == 1:
-                        ray.alive = False
-                        continue
-                    ray.turn(down)
-                    energized[*ray.position][1] = 1
-                elif ray.direction == down:
-                    if energized[*ray.position][0] == 1:
-                        ray.alive = False
-                        continue
-                    ray.turn(right)
-                    energized[*ray.position][0] = 1
-            elif grid[*ray.position] == "/":
-                if ray.direction == left:
-                    if energized[*ray.position][0] == 1:
-                        ray.alive = False
-                        continue
-                    ray.turn(down)
-                    energized[*ray.position][0] = 1
-                elif ray.direction == up:
-                    if energized[*ray.position][0] == 1:
-                        ray.alive = False
-                        continue
-                    ray.turn(right)
-                    energized[*ray.position][0] = 1
-                elif ray.direction == right:
-                    if energized[*ray.position][1] == 1:
-                        ray.alive = False
-                        continue
-                    ray.turn(up)
-                    energized[*ray.position][1] = 1
-                elif ray.direction == down:
-                    if energized[*ray.position][1] == 1:
-                        ray.alive = False
-                        continue
-                    ray.turn(left)
-                    energized[*ray.position][1] = 1
+            elif grid[*ray.position] in ("\\", "/"):
+                new_dir, durl = slash_actions[grid[*ray.position]][ray.direction]
+                if energized[*ray.position][durl] == 1:
+                    ray.alive = False
+                    continue
+                ray.turn(new_dir)
+                energized[*ray.position][durl] = 1
+
             elif grid[*ray.position] == "|":
                 if ray.direction in (left, right):
                     if energized[*ray.position][0] == 1:
@@ -119,7 +79,7 @@ def solver_alt1(input_file, part2=False):
     with open(input_file, 'r') as file:
         lines = file.readlines()
     grid = np.array([[i for i in line.strip()] for line in lines], dtype=str)
-    
+
     if not part2:
         position = np.array([0, -1])
         ray_splits = [Ray(position, right)]

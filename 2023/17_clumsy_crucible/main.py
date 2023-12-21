@@ -1,5 +1,4 @@
-alt = 1
-verbose = True
+alt = 3
 
 if alt == 1:
     from solver import solver_alt1 as solver
@@ -22,7 +21,6 @@ def test_part(input, true, part2=False):
 
     if ans != true:
         raise Exception(f"Test part {'2' if part2 else '1'} failed for {input}. Expected {true}, got {ans}")
-    if verbose: print(f"Test part {'2' if part2 else '1'} passed for {input}.")
     
 def unit_tests(input_file, expected, part2=False):
     from solver import func_that_does_the_thing
@@ -31,11 +29,10 @@ def unit_tests(input_file, expected, part2=False):
 
         if ans != exp:
             raise Exception(f"Unit test {i+1} failed. Expected {exp}, got {ans}")
-    if verbose: print(f"Unit tests passed for part {'2' if part2 else '1'}!")
         
 
 def main():
-    test1 = "test_input.txt", None 
+    test1 = "test_input.txt", 102 
     test2 = "test_input.txt", None
     real = "input.txt"
 
@@ -59,8 +56,16 @@ def main():
     elif alt == 3:
         test_part(*test1)
         print(f"Part 1: {solver1(real)}")
-        test_part(*test2, part2=True)
-        print(f"Part 2: {solver2(real)}")
+        # test_part(*test2, part2=True)
+        # print(f"Part 2: {solver2(real)}")
     
 if __name__ == "__main__":
     main()
+
+# Tried:
+    # 1. 1042 (too high)
+    # 2. 948 (too high)
+    # 3. 885 (??)
+    # 4. 871 (??)
+    # 5. 818 (??)
+
