@@ -25,6 +25,8 @@ def test_part(input, true, part2=False):
     if verbose: print(f"Test part {'2' if part2 else '1'} passed for {input}.")
     
 def unit_tests(input_file, expected, part2=False):
+    if expected == (None, None):
+        return
     from solver import func_that_does_the_thing
     for i, (input, exp) in enumerate(zip(open(input_file, "r").read().split("\n")[:-1], expected)):
         ans = func_that_does_the_thing(input, part2=part2)
