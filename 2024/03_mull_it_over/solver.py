@@ -20,10 +20,28 @@ def solver_alt2(input_file):
 
 def solver1_alt3(input_file):
     lines = read(input_file)
+    program = "".join(lines)
+    muls = re.findall(r'mul\(\d+,\d+\)', program)
+    sum = 0
+    for mul in muls:
+        a, b = (int(i) for i in re.findall(r'\d+', mul))
+        sum += a * b
     # One function that does part1. Used in conjunction with solver2_alt3
-    return None
+    return sum
 
 def solver2_alt3(input_file):
     lines = read(input_file)
     # One function that does part2. Used in conjunction with solver1_alt3
-    return None
+    program = "".join(lines)
+    muls = re.findall(r"mul\(\d+,\d+\)|do\(\)|don't\(\)", program)
+    sum = 0
+    enabled = True
+    for mul in muls:
+        if mul == "do()":
+            enabled = True
+        elif mul == "don't()":
+            enabled = False
+        else:
+            a, b = (int(i) for i in re.findall(r'\d+', mul))
+            sum += a * b * enabled
+    return sum

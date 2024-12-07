@@ -8,8 +8,5 @@ elif alt == 3:
     from solver import solver1_alt3 as solver1, solver2_alt3 as solver2
 from solver import func_that_does_the_thing
 
-test1 = "test_input.txt"
-if alt != 3:
-    solver(test1)
-else:
-    solver1(test1)
+test1 = "test_input_2.txt"
+solver2(test1)

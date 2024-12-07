@@ -9,7 +9,4 @@ elif alt == 3:
 from solver import func_that_does_the_thing
 
 test1 = "test_input.txt"
-if alt != 3:
-    solver(test1)
-else:
-    solver1(test1)
+solver2(test1)
