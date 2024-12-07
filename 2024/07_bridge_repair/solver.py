@@ -14,9 +14,6 @@ def concat(a, b):
     return c
 
 def valid(result, equation, part2=False):
-    ops = [lambda a, b: a + b, lambda a, b: a * b]
-    if part2:
-        ops += [concat]
     if len(equation) == 1:
         return result == equation[0]
     a = equation.pop(0)
@@ -29,6 +26,11 @@ def valid(result, equation, part2=False):
 
 
 def solver_alt1(input_file, part2=False):
+    global ops 
+    ops = [lambda a, b: a + b, lambda a, b: a * b]
+    if part2:
+        ops += [concat]
+        
     lines = read(input_file)
     sum = 0
     for line in lines:
