@@ -16,6 +16,8 @@ def concat(a, b):
 def valid(result, equation, part2=False):
     if len(equation) == 1:
         return result == equation[0]
+    if equation[0] > result:
+        return False
     a = equation.pop(0)
     for op in ops:
         new_eq = equation.copy()
