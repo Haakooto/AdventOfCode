@@ -10,6 +10,9 @@ elif alt == 3:
 
 
 def test_part(input, true, part2=False):
+    if true is None:
+        return
+
     if alt == 1:
         ans = solver(input, part2=part2)  
 
@@ -24,26 +27,11 @@ def test_part(input, true, part2=False):
         raise Exception(f"Test part {'2' if part2 else '1'} failed for {input}. Expected {true}, got {ans}")
     if verbose: print(f"Test part {'2' if part2 else '1'} passed for {input}.")
     
-def unit_tests(input_file, expected, part2=False):
-    if expected == (None, None):
-        return
-    from solver import func_that_does_the_thing
-    for i, (input, exp) in enumerate(zip(open(input_file, "r").read().split("\n")[:-1], expected)):
-        ans = func_that_does_the_thing(input, part2=part2)
-
-        if ans != exp:
-            raise Exception(f"Unit test {i+1} failed. Expected {exp}, got {ans}")
-    if verbose: print(f"Unit tests passed for part {'2' if part2 else '1'}!")
-        
 
 def main():
     test1 = "test_input.txt", None 
-    test2 = "test_input.txt", None
+    test2 = "test_input.txt", None  # remember to update filename if needed
     real = "input.txt"
-
-    # For days where the input is a list of inputs treated separately
-    unit_tests(test1[0], (None, None), part2=False)
-    unit_tests(test2[0], (None, None), part2=True)
 
     if alt == 1:
         test_part(*test1)
@@ -53,9 +41,9 @@ def main():
         
     elif alt == 2:
         test_part(*test1)
+        test_part(*test2, part2=True)
         p1, p2 = solver(real)
         print(f"Part 1: {p1}")
-        test_part(*test2, part2=True)
         print(f"Part 2: {p2}")
         
     elif alt == 3:
