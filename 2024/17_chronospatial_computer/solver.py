@@ -13,14 +13,13 @@ class Register:
 
 def read(file):
     with open(file, "r") as file:
-        c = file.read()
-    rs, p = c.split("\n\n")
+        rs, p = file.read().split("\n\n")
     regs = [int(i) for i in re.findall(r"\d+", rs)]
     prog = [int(i) for i in re.findall(r"\d+", p)]
     return regs, prog
 
 def ERROR():
-    assert False, "Combo value 7 used!"
+    assert False, "Combo value 7 used, program invalid"
 
 def run_opcode(program: list[int], register: list[int]):
     register = {c: Register(i) for c, i in zip("ABC", register)}
@@ -38,6 +37,7 @@ def run_opcode(program: list[int], register: list[int]):
     }
     def divider(op):
         return int(register.A() / (2 ** combo[op]()))
+
     instructions = {
         0: lambda op: register.A(divider(op)),
         6: lambda op: register.B(divider(op)),
@@ -45,52 +45,48 @@ def run_opcode(program: list[int], register: list[int]):
         1: lambda op: register.B(register.B() ^ op),
         2: lambda op: register.B(combo[op]() % 8),
         4: lambda op: register.B(register.B() ^ register.C()),
-        3: lambda op: None,  # In case inst is 3 and A is 0
+        3: lambda op: None,  # Jump-op, do nothing when A == 0
     }
 
     pointer = 0
     while pointer < len(program):
         inst = program[pointer]
         op = program[pointer + 1]
-        if inst == 3 and register.A() != 0:
-            pointer = op - 2  # reset pointer
-        elif inst == 5:
-            yield combo[op]() % 8  # output
-        else:
-            instructions[inst](op)  # other actions
+        if inst == 3 and register.A() != 0:  # jump
+            pointer = op - 2  
+        elif inst == 5:  # output
+            yield combo[op]() % 8 
+        else:  # all other actions
+            instructions[inst](op) 
         pointer += 2
 
 def solver1_alt3(input_file):
     register, program = read(input_file)
-    output = []
-
-    for o in run_opcode(program, register):
-        output.append(str(o))
-
-    return ",".join(output)
+    return ",".join([str(o) for o in run_opcode(program, register)])
 
 def solver2_alt3(input_file):
     register, program = read(input_file)
     As = range(2**7)  # prog uses up to 10 bits per output, get rest 3 from loop below (range 8)
     for k, p in enumerate(program):
-        A2 = []
-        for i in range(8):
-            v = (i + 1) * 2**(7 + k*3)  # adds 7+3k 0s to binary rep.
-            for j in As:
+        candidates = []
+        for i in range(8):  # loop over all 3-bit numbers
+            v = (i + 1) * 2**(7 + k*3)  # Add to start of binary number
+            # v look like bbb00000... where bbb in bin(0 - 8), and 7 + 3k zeros
+            for j in As:  # loop over prev candidates
                 register[0] = j + v
                 g = run_opcode(program, register)
-                for _ in range(k):
-                    next(g)
+                for _ in range(k): 
+                    next(g)  # assume first k outputs are correct
                 if next(g) == p:
-                    A2.append(j + v)
+                    candidates.append(j + v)
         # Above loop find candidates based on first some bits
         # Check if any candidates solves exactly
-        for a in A2:
+        for A in candidates:
             sols = []
-            register[0] = a
+            register[0] = A
             ns = [i for i in run_opcode(program, register)]
             if ns == program:
-                sols.append(a)
+                sols.append(A)
             if sols:
                 return min(sols)
-        As = A2
+        As = candidates
